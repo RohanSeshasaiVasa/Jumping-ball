@@ -2,45 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Jumping Ball Game</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background-color: #f0f0f0;
+      background: #f0f0f0;
     }
-    canvas {
-      display: block;
-    }
+    canvas { display: block; }
   </style>
 </head>
 <body>
 <canvas id="game"></canvas>
 <script>
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('game'), ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  let ball = {
-    x: canvas.width / 2,
-    y: canvas.height - 50,
-    r: 20,
-    vx: 2,
-    vy: -10,
-    gravity: 0.5,
-    bounce: 0.8
-  };
-
+  let ball = { x: canvas.width / 2, y: canvas.height - 50, r: 20, vx: 2, vy: -10, gravity: 0.5, bounce: 0.8 };
   let obstacles = Array.from({ length: 5 }, () => createObstacle());
 
   function createObstacle() {
-    return {
-      x: Math.random() * (canvas.width - 50),
-      y: Math.random() * (canvas.height - 200),
-      size: 50
-    };
+    return { x: Math.random() * (canvas.width - 50), y: Math.random() * (canvas.height - 200), size: 50 };
   }
 
   function drawBall() {
@@ -48,9 +32,6 @@
     ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
     ctx.fillStyle = 'blue';
     ctx.fill();
-    ctx.closePath();
-
-    // Draw the name "Rohan" inside the ball
     ctx.font = '12px Arial';
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
@@ -60,16 +41,12 @@
 
   function drawObstacles() {
     ctx.fillStyle = 'red';
-    for (let obs of obstacles) {
+    obstacles.forEach(obs => {
       ctx.fillRect(obs.x, obs.y, obs.size, obs.size);
-
-      // Draw the name "Mohan" inside each obstacle
       ctx.font = '10px Arial';
       ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
       ctx.fillText('Mohan', obs.x + obs.size / 2, obs.y + obs.size / 2);
-    }
+    });
   }
 
   function resetGame() {
@@ -80,16 +57,11 @@
   }
 
   function checkCollision() {
-    for (let obs of obstacles) {
-      if (
-        ball.x + ball.r > obs.x &&
-        ball.x - ball.r < obs.x + obs.size &&
-        ball.y + ball.r > obs.y &&
-        ball.y - ball.r < obs.y + obs.size
-      ) {
+    obstacles.forEach(obs => {
+      if (ball.x + ball.r > obs.x && ball.x - ball.r < obs.x + obs.size && ball.y + ball.r > obs.y && ball.y - ball.r < obs.y + obs.size) {
         resetGame();
       }
-    }
+    });
   }
 
   function update() {
@@ -102,9 +74,7 @@
       ball.y = canvas.height - ball.r;
       ball.vy *= -ball.bounce;
     }
-    if (ball.x + ball.r > canvas.width || ball.x - ball.r < 0) {
-      ball.vx *= -1;
-    }
+    if (ball.x + ball.r > canvas.width || ball.x - ball.r < 0) ball.vx *= -1;
 
     drawBall();
     drawObstacles();
@@ -113,16 +83,11 @@
   }
 
   setInterval(() => {
-    obstacles = Array.from({ length: 5 }, () => createObstacle()); // Move obstacles every 5 seconds
+    obstacles = Array.from({ length: 5 }, createObstacle);
   }, 5000);
 
   update();
-
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') {
-      ball.vy -= 10;
-    }
-  });
+  window.addEventListener('keydown', e => { if (e.code === 'Space') ball.vy -= 10; });
 </script>
 </body>
 </html>
