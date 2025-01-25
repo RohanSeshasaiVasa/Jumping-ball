@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jumping Ball Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #f0f0f0;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let ball = {
+    x: canvas.width / 2,
+    y: canvas.height - 50,
+    r: 20,
+    vx: 2,
+    vy: -10,
+    gravity: 0.5,
+    bounce: 0.8
+  };
+
+  let obstacles = Array.from({ length: 5 }, () => createObstacle());
+
+  function createObstacle() {
+    return {
+      x: Math.random() * (canvas.width - 50),
+      y: Math.random() * (canvas.height - 200),
+      size: 50
+    };
+  }
+
+  function drawBall() {
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'blue';
+    ctx.fill();
+    ctx.closePath();
+
+    // Draw the name "Rohan" inside the ball
+    ctx.font = '12px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Rohan', ball.x, ball.y);
+  }
+
+  function drawObstacles() {
+    ctx.fillStyle = 'red';
+    for (let obs of obstacles) {
+      ctx.fillRect(obs.x, obs.y, obs.size, obs.size);
+
+      // Draw the name "Mohan" inside each obstacle
+      ctx.font = '10px Arial';
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Mohan', obs.x + obs.size / 2, obs.y + obs.size / 2);
+    }
+  }
+
+  function resetGame() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height - 50;
+    ball.vx = 2;
+    ball.vy = -10;
+  }
+
+  function checkCollision() {
+    for (let obs of obstacles) {
+      if (
+        ball.x + ball.r > obs.x &&
+        ball.x - ball.r < obs.x + obs.size &&
+        ball.y + ball.r > obs.y &&
+        ball.y - ball.r < obs.y + obs.size
+      ) {
+        resetGame();
+      }
+    }
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ball.y += ball.vy;
+    ball.x += ball.vx;
+    ball.vy += ball.gravity;
+
+    if (ball.y + ball.r > canvas.height) {
+      ball.y = canvas.height - ball.r;
+      ball.vy *= -ball.bounce;
+    }
+    if (ball.x + ball.r > canvas.width || ball.x - ball.r < 0) {
+      ball.vx *= -1;
+    }
+
+    drawBall();
+    drawObstacles();
+    checkCollision();
+    requestAnimationFrame(update);
+  }
+
+  setInterval(() => {
+    obstacles = Array.from({ length: 5 }, () => createObstacle()); // Move obstacles every 5 seconds
+  }, 5000);
+
+  update();
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      ball.vy -= 10;
+    }
+  });
+</script>
+</body>
+</html>
